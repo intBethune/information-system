@@ -1,0 +1,32 @@
+from aiohttp import web
+import jinja2
+from pathlib import Path
+
+from dbconn import db_block
+
+home_path = str(Path(__file__).parent)
+jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(home_path))
+
+
+async def list_grade(request):
+    with db_block() as db:
+        db.execute('''
+        SELECT s.name as stu_name, c.name as course_name, g.grade 
+        FROM course_grade as g
+        INNER JOIN student as s ON g.stu_sn = s.sn
+        INNER JOIN course as c  ON g.cou_sn = c.sn ;
+        ''')
+
+        items = [tuple(row) for row in db]
+
+    template = jinja_env.get_template('list.html')
+    return web.Response(text=template.render(items=items),
+                        content_type="text/html")
+
+
+app = web.Application()
+app.add_routes([web.get('/', list_grade)])
+
+
+if __name__ == "__main__":
+    web.run_app(app, port=8080)

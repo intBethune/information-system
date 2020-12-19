@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+<!--  -->
+{% block styles %}<link href="/grade_list.css" rel="stylesheet" /> {% endblock %}
+
+<!--  -->
+{% block page_content %}
+<div class="paper">
+    <form action="/action/cg/" method="post">
+        查询课程成绩： <select name="cou_sn">
+                  <option value="">--选择--</option>
+                  {% for item in courses %}
+                  <option value="{{item.cou_sn}}">{{item.cou_name}}({{item.cou_sn}})</option>
+                  {% endfor %}
+                   </select>
+                   <input type="submit"  value="查询成绩" />
+    </form>
+    <a class="btn" href="/grade"> 返回成绩列表：</a>
+</div>
+{% endblock %}
